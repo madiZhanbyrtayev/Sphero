@@ -1,12 +1,14 @@
 package ShortestPathTest;
 
 import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+
 import org.junit.Test;
+
+import ShortestPath.Graph;
 
 
 public class GraphReaderTest {

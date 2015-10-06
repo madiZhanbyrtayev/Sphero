@@ -25,8 +25,8 @@ import org.w3c.dom.Text;
 
 public class MainActivity extends Activity {
     BluetoothAdapter myadap;
-    DualStackDiscoveryAgent myAgent;
-    public static ConvenienceRobot mRobot;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,41 +37,12 @@ public class MainActivity extends Activity {
 
         myadap=BluetoothAdapter.getDefaultAdapter();
         enableDevices();
-        myAgent=DualStackDiscoveryAgent.getInstance();
-        myAgent.addRobotStateListener(new RobotChangedStateListener() {
-            @Override
-            public void handleRobotChangedState(Robot robot, RobotChangedStateNotificationType robotChangedStateNotificationType) {
-                switch (robotChangedStateNotificationType){
-                    case Online:
-                        mRobot=new ConvenienceRobot(robot);
-                        mRobot.setLed(255, 0, 255);
-                        long sensorFlag = SensorFlag.VELOCITY.longValue() | SensorFlag.LOCATOR.longValue();
-                        mRobot.enableSensors( sensorFlag, SensorControl.StreamingRate.STREAMING_RATE10 );
-
-                        mytxt.setText("Sphero discovered:" + robot.getName());
-                        controlButton.setVisibility(View.VISIBLE);
-                        if(myAgent.isDiscovering()) {
-                            myAgent.stopDiscovery();
-                        }
-                        break;
-                }
-            }
-        });
-
-
+        RobotControl mControl=RobotControl.getInstance();
+        mControl.startDiscovery(getApplicationContext());
+        controlButton.setVisibility(View.VISIBLE);
     }
 
-    public void findSphero(View view){
-        try{
-            if(myAgent.isDiscovering()){
-                myAgent.stopDiscovery();
-            }
 
-            myAgent.startDiscovery(getApplicationContext());
-        }catch (DiscoveryException e){
-            Log.d("Exceptions", e.getMessage());
-        }
-    }
     public void enableDevices(){
         if(myadap==null){
             // System.exit(-1);

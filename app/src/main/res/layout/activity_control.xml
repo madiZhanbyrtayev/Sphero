@@ -81,7 +81,7 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="number"
+        android:inputType="numberSigned"
         android:ems="10"
         android:id="@+id/desiredY"
         android:layout_toStartOf="@+id/subButton"
@@ -104,8 +104,8 @@
         android:layout_height="wrap_content"
         android:text="Stop"
         android:id="@+id/stopButton"
-        android:layout_below="@+id/subButton"
-        android:layout_alignStart="@+id/blue" />
+        android:layout_below="@+id/upButton"
+        android:layout_alignEnd="@+id/upButton" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -113,16 +113,15 @@
         android:layout_height="wrap_content"
         android:text="Up"
         android:id="@+id/upButton"
-        android:layout_below="@+id/stopButton"
-        android:layout_alignStart="@+id/desiredY" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Down"
-        android:id="@+id/downButton"
-        android:layout_below="@+id/upButton"
-        android:layout_alignParentStart="true" />
+        android:text="Calibrate Sphero"
+        android:id="@+id/calibrate_sphero"
+        android:layout_above="@+id/green"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
