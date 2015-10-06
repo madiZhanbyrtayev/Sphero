@@ -1,5 +1,6 @@
 package com.madi.sphero_21;
 
+import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,23 +23,29 @@ import com.orbotix.common.Robot;
 import com.orbotix.common.internal.AsyncMessage;
 import com.orbotix.common.internal.DeviceResponse;
 
+import java.io.BufferedReader;
 
-public class ControlActivity extends ActionBarActivity implements SensorEventListener{
+
+public class ControlActivity extends Activity implements SensorEventListener{
     private SensorManager myManager;
-   private Button red;
-   private Button green;
-   private  Button blue;
-   private  Button SP;
+    private Button red;
+    private Button green;
+    private  Button blue;
+    private  Button SP;
     private Button stop;
     private Button up;
     private Button down;
-   private TextView mtxtY;
-   private TextView mtxtX;
+    private Button disconnect;
+    private TextView mtxtY;
+    private TextView mtxtX;
     private TextView dTxtY;
     private TextView dTxtX;
-    private float acc_x;
-    private float acc_y;
-    private float acc_z;
+    private float x;
+    private float y;
+    private float z;
+    private float prevG;
+    private static float velocity=0.5f;
+    private float direction=0.f;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +93,7 @@ public class ControlActivity extends ActionBarActivity implements SensorEventLis
         blue=(Button)findViewById(R.id.blue);
         SP= (Button) findViewById(R.id.subButton);
         stop=(Button) findViewById(R.id.stopButton);
+        disconnect=(Button) findViewById(R.id.disButton);
         mtxtY=(TextView)findViewById(R.id.resy);
         mtxtX=(TextView)findViewById(R.id.resx);
         dTxtY=(EditText)findViewById(R.id.desiredY);
@@ -99,7 +107,7 @@ public class ControlActivity extends ActionBarActivity implements SensorEventLis
         stop.setOnClickListener(mylistener);
         up.setOnClickListener(mylistener);
         down.setOnClickListener(mylistener);
-
+        disconnect.setOnClickListener(mylistener);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -135,28 +143,39 @@ public class ControlActivity extends ActionBarActivity implements SensorEventLis
                 case R.id.blue:
                     MainActivity.mRobot.setLed(0.f, 0.f, 1.f);
                     break;
+                case R.id.disButton:
+                    MainActivity.mRobot.disconnect();
+                    System.exit(-1);
+                    break;
                 case R.id.subButton:
 
                     float y=Float.parseFloat(dTxtY.getText().toString());
                     float x=Float.parseFloat(dTxtX.getText().toString());
                     float currY=Float.parseFloat(mtxtY.getText().toString());
                     float currX=Float.parseFloat(mtxtX.getText().toString());
+                    direction=(float)Math.toDegrees(Math.atan2((double)(y-currY), (x-currX)));
 
-                    float dist=(float)Math.sqrt(Math.pow((y-currY), 2.f)+Math.pow((x-currX), 2.f));
-                    float angle=(float)Math.asin((y - currY) / dist);
-                    Log.d("Results", "Angle is "+Float.toString(angle));
-                    Log.d("Results", "Distance is " + Float.toString(dist));
-                    MainActivity.mRobot.setZeroHeading();
-                    MainActivity.mRobot.drive(angle, 0.5f);
+                    if(currX>=x && y>=currY){
+                        direction+=270.f;
+                    }else if(currX<=x && y>=currY){
+                        direction=90.f-direction;
+                    }else if(currX>=x && currY>=y){
+                        direction=270.f-direction;
+                    } else if(currX<=x && currY>=y){
+                        direction+=90.f;
+                    }
+
+                    Log.d("Results", "Angle is " + Float.toString(direction));
+                    // MainActivity.mRobot.drive(direction, velocity);
                     break;
                 case R.id.stopButton:
                     MainActivity.mRobot.stop();
                     break;
                 case R.id.upButton:
-                    MainActivity.mRobot.drive(0.f, 0.5f);
+                    MainActivity.mRobot.drive(direction, velocity);
                     break;
                 case R.id.downButton:
-                    MainActivity.mRobot.drive(180.f, 0.5f);
+                    MainActivity.mRobot.drive(180.f, velocity);
                     break;
             }
         }
@@ -164,12 +183,26 @@ public class ControlActivity extends ActionBarActivity implements SensorEventLis
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        acc_x=event.values[0];
-        acc_y=event.values[1];
-        acc_z=event.values[2];
-        if(acc_y<=5f){
-            MainActivity.mRobot.stop();
+        x=event.values[0];
+        y=event.values[1];
+        z=event.values[2];
+        float g=(x*x+y*y+z*z)/(SensorManager.GRAVITY_EARTH*SensorManager.GRAVITY_EARTH);
+        if(g>=2.f){
+            if(prevG>=g) {
+                this.onStepDetected();
+                prevG=0;
+            }
         }
+        prevG=g;
+    }
+    private void onStepDetected(){
+        MainActivity.mRobot.drive(direction, velocity);
+        try{
+            Thread.sleep(500);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        MainActivity.mRobot.stop();
     }
 
     @Override

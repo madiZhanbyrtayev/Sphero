@@ -125,4 +125,12 @@
         android:layout_below="@+id/upButton"
         android:layout_alignParentStart="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disconnect"
+        android:id="@+id/disButton"
+        android:layout_alignTop="@+id/downButton"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>
