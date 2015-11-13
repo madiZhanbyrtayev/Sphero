@@ -6,4 +6,5 @@
     <string name="fs">Find Sphero</string>
     <string name="title_activity_control">ControlActivity</string>
     <string name="title_activity_direction">DirectionActivity</string>
+    <string name="title_activity_second">SecondActivity</string>
 </resources>

@@ -2,6 +2,7 @@ package ShortestPath;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -251,12 +252,13 @@ public class Graph {
      * The rest lines must contain descriptions of edges in the following format:
      * label of the first node and label of the second node separated with space
      *
-     * @param fileName is name of file
+     * @param stream is name of file
      * @return read graph
      * @throws Exception if graph is not in specified format
      */
-    public static Graph readFromFile(String fileName) throws Exception {
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
+    public static Graph readFromFile(InputStreamReader stream) throws Exception {
+        try {
+            BufferedReader bufferedReader = new BufferedReader(stream);
             Graph graph = new Graph();
             String fileLine = bufferedReader.readLine();
             int nodeCount = parseOneNonnegativeInt(fileLine);
@@ -287,9 +289,10 @@ public class Graph {
                     throw new Exception("Wrong input format, line: " + fileLine);
                 }
             }
-
+            bufferedReader.close();
             return graph;
         } catch (Exception ex) {
+
             throw ex;
         }
     }

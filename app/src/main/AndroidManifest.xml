@@ -41,6 +41,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.madi.sphero_21.ControlActivity" />
         </activity>
+        <activity
+            android:name=".SecondActivity"
+            android:label="@string/title_activity_second"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.madi.sphero_21.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

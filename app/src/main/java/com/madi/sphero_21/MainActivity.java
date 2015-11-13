@@ -32,14 +32,18 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final Button controlButton=(Button) findViewById(R.id.gtc);
-        controlButton.setVisibility(View.INVISIBLE);
         final TextView mytxt=(TextView) findViewById(R.id.txt);
 
         myadap=BluetoothAdapter.getDefaultAdapter();
         enableDevices();
         RobotControl mControl=RobotControl.getInstance();
-        mControl.startDiscovery(getApplicationContext());
-        controlButton.setVisibility(View.VISIBLE);
+        mControl.startDiscovery(getApplicationContext(), new Runnable() {
+            @Override
+            public void run() {
+                mytxt.setText("Connected!!!");
+                controlButton.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 
@@ -59,7 +63,7 @@ public class MainActivity extends Activity {
         return true;
     }
     public void next(View view){
-        Intent toControl=new Intent(getApplicationContext(), ControlActivity.class);
+        Intent toControl=new Intent(getApplicationContext(), SecondActivity.class);
         startActivity(toControl);
     }
 
