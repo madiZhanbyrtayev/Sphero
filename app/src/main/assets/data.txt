@@ -1,0 +1,6 @@
+3
+0 0 Madi
+50 50 Keks
+0 50 Abs
+Madi Keks
+Keks Abs
