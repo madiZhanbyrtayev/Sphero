@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.InputStreamReader;
@@ -17,6 +19,14 @@ import ShortestPath.Node;
 
 public class SecondActivity extends AppCompatActivity {
     private TextView mt;
+    private Button mButton;
+    private SeekBar mSeekbar;
+    private boolean started=false;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RobotControl.getInstance().turnOff();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,25 +35,57 @@ public class SecondActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mButton=(Button) findViewById(R.id.myB);
+        mSeekbar=(SeekBar) findViewById(R.id.mySeekBar);
 
-        Graph graph = new Graph();
-        try {
-            graph.readFromFile(new InputStreamReader(getAssets().open("data.txt")));
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-        mt = (TextView) findViewById(R.id.myTxt);
-        List<Node> myNodes = graph.getShortestPath("Madi", "Keks");
-        Log.d("SUPER LOG", myNodes.toString());
-        RobotControl rc = RobotControl.getInstance();
-        rc.driveAlong(myNodes, new Runnable() {
+        mButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                mt.setText("Finished!");
+            public void onClick(View v) {
+                if (!started) {
+                    RobotControl.getInstance().setHeading();
+                    mSeekbar.setEnabled(false);
+                    /**
+                     *     GRAPH CALCULATION
+                     *     Begin                         **/
+                    Graph graph = null;
+                    try {
+                        graph = Graph.readFromFile(new InputStreamReader(getAssets().open("data.txt")));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.exit(-1);
+                    }
+                    mt = (TextView) findViewById(R.id.myTxt);
+                    List<Node> myNodes = graph.getShortestPath("Madi", "Bekz");
+                    Log.d("SUPER LOG", myNodes.toString());
+                    RobotControl rc = RobotControl.getInstance();
+                    rc.driveAlong(myNodes, new Runnable() {
+                        @Override
+                        public void run() {
+                            mt.setText("Finished!");
+                        }
+                    });
+                    // GRAPH PART END
+                    started = true;
+                }
             }
         });
 
+        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                RobotControl.getInstance().rotateTO((float) progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
 }

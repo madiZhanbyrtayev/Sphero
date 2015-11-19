@@ -211,7 +211,7 @@ public class Node {
      */
     @Override
     public String toString() {
-        return "{x=" + this.x + ", y=" + this.y + ", label=" + this.label;
+        return "{x=" + this.x + ", y=" + this.y + ", label=" + this.label + "}";
     }
 }
 

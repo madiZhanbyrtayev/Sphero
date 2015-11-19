@@ -16,4 +16,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/myTxt" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/myB"
+        android:text="Press to Start"
+        android:layout_below="@+id/myTxt"
+        android:layout_alignParentStart="true" />
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:id="@+id/mySeekBar"
+        android:max="360"
+        android:layout_below="@+id/myB"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="113dp" />
+
+
 </RelativeLayout>

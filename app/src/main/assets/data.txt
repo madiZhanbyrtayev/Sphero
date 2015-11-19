@@ -1,6 +1,10 @@
-3
+5
 0 0 Madi
-50 50 Keks
-0 50 Abs
+0 1600 Keks
+1600 1600 Label1
+1600 0 Label2
+0 0 Bekz
 Madi Keks
-Keks Abs
+Keks Label1
+Label1 Label2
+Label2 Bekz
