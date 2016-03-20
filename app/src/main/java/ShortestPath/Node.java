@@ -1,6 +1,9 @@
 package ShortestPath;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +13,7 @@ import java.util.List;
  * Two nodes are equal iff their labels are equal
  */
 public class Node {
+
     private double x;
     private double y;
     private String label;
@@ -136,7 +140,8 @@ public class Node {
      */
     public List <Node> getNeighbors() {
         return neighbors;
-    }
+
+  }
 
     /**
      * Parses given string and return Node object.
