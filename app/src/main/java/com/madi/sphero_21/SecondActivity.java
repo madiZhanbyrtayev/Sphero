@@ -1,8 +1,6 @@
 package com.madi.sphero_21;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -11,10 +9,15 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
 import ShortestPath.Graph;
+import ShortestPath.JSONGraph;
 import ShortestPath.Node;
 
 public class SecondActivity extends AppCompatActivity {
@@ -48,8 +51,17 @@ public class SecondActivity extends AppCompatActivity {
                      *     GRAPH CALCULATION
                      *     Begin                         **/
                     Graph graph = null;
+
                     try {
-                        graph = Graph.readFromFile(new InputStreamReader(getAssets().open("data.txt")));
+                        InputStream temp = getAssets().open("data.json");
+                        StringBuilder builder = new StringBuilder();
+
+                        byte[] buffer = new byte[1024];
+                        while (temp.read(buffer) != -1) {
+                            builder.append(buffer);
+                        }
+
+                        graph = JSONGraph.decodeGraph(new JSONObject(builder.toString()));
                     } catch (Exception e) {
                         e.printStackTrace();
                         System.exit(-1);

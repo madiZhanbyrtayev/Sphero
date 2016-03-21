@@ -23,10 +23,7 @@ public class Node {
      * Default constructor
      */
     public Node() {
-        this.x = 0;
-        this.y = 0;
-        this.label = "";
-        this.neighbors = new ArrayList <>();
+        this(0, 0, null);
     }
 
     /**
@@ -141,38 +138,6 @@ public class Node {
     public List <Node> getNeighbors() {
         return neighbors;
 
-  }
-
-    /**
-     * Parses given string and return Node object.
-     * String must contain x, y and label separated
-     * with any number of spaces.
-     * @param string to parse
-     * @throws Exception if string is not in specified format
-     * @return parsed node
-     */
-    public static Node parseNode(String string) throws Exception {
-        if (string == null) {
-            throw new Exception("Wrong input format, empty line");
-        }
-
-        String[] stringParts = string.split(" ");
-        if (stringParts.length != 3) {
-            throw new Exception("Wrong input format, line: " + string);
-        }
-
-        double x, y;
-        String label;
-
-        try {
-            x = Double.parseDouble(stringParts[0]);
-            y = Double.parseDouble(stringParts[1]);
-            label = stringParts[2];
-        } catch (Exception ex) {
-            throw new Exception("Wrong input format, line: " + string);
-        }
-
-        return new Node(x, y, label);
     }
 
     /**
@@ -216,7 +181,9 @@ public class Node {
      */
     @Override
     public String toString() {
-        return "{x=" + this.x + ", y=" + this.y + ", label=" + this.label + "}";
+        return  "{\"label\" : " + label +
+                ", \"x\" : " + x +
+                ", \"y\" : " + y;
     }
 }
 

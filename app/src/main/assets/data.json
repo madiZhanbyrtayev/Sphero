@@ -1,0 +1,16 @@
+{
+    "nodes" : [
+        {"label" : "Madi",   "x" : 0.0,    "y": 0.0},
+        {"label" : "Keks",   "x" : 0.0,    "y": 1600.0},
+        {"label" : "Label1", "x" : 1600.0, "y": 1600.0},
+        {"label" : "Label2", "x" : 1600.0, "y": 0.0},
+        {"label" : "Bekz",   "x" : 0.0,    "y": 0.0}
+    ],
+
+    "edges" : [
+        {"labelOne" : "Madi", "labelTwo" : "Keks"},
+        {"labelOne" : "Keks", "labelTwo" : "Label1"},
+        {"labelOne" : "Label1", "labelTwo" : "Label2"},
+        {"labelOne" : "Label2", "labelTwo" : "Bekz"}
+    ]
+}
