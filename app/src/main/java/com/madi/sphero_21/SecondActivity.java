@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import ShortestPath.Graph;
@@ -85,7 +83,7 @@ public class SecondActivity extends AppCompatActivity {
         mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                RobotControl.getInstance().rotateTO((float) progress);
+                RobotControl.getInstance().rotateTo((float) progress);
             }
 
             @Override
