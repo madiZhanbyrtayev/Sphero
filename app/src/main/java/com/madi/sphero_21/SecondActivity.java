@@ -1,5 +1,10 @@
 package com.madi.sphero_21;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,11 +23,14 @@ import ShortestPath.Graph;
 import ShortestPath.JSONGraph;
 import ShortestPath.Node;
 
-public class SecondActivity extends AppCompatActivity {
+public class SecondActivity extends AppCompatActivity implements SensorEventListener{
     private TextView mt;
     private Button mButton;
     private SeekBar mSeekbar;
+    private SensorManager sensorManager;
+    private Sensor stepSensor;
     private boolean started=false;
+    private long prevTime=0;
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -38,7 +46,9 @@ public class SecondActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mButton=(Button) findViewById(R.id.myB);
         mSeekbar=(SeekBar) findViewById(R.id.mySeekBar);
-
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_FASTEST);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,6 +78,7 @@ public class SecondActivity extends AppCompatActivity {
                     List<Node> myNodes = graph.getShortestPath("Madi", "Bekz");
                     Log.d("SUPER LOG", myNodes.toString());
                     RobotControl rc = RobotControl.getInstance();
+                    prevTime = System.currentTimeMillis();
                     rc.driveAlong(myNodes, new Runnable() {
                         @Override
                         public void run() {
@@ -98,4 +109,19 @@ public class SecondActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if(started){
+            if(event.timestamp*1E-6-prevTime>2000){
+                RobotControl.getInstance().pauseMovement();
+            } else {
+                RobotControl.getInstance().startMovement();
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 }

@@ -112,13 +112,17 @@ public class RobotControl {
     }
 
     public void startMovement() {
-        mRobot.drive(robotDirection, robotSpeed);
-        robotRunning = true;
+        if(!robotRunning) {
+            mRobot.drive(robotDirection, robotSpeed);
+            robotRunning = true;
+        }
     }
 
     public void pauseMovement() {
-        mRobot.stop();
-        robotRunning = false;
+        if(robotRunning) {
+            mRobot.stop();
+            robotRunning = false;
+        }
     }
 
     public void startDiscovery(Context mContext, final Runnable onRobotFound) {

@@ -7,4 +7,5 @@
     <string name="title_activity_control">ControlActivity</string>
     <string name="title_activity_direction">DirectionActivity</string>
     <string name="title_activity_second">SecondActivity</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
