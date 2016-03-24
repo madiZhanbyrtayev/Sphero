@@ -29,7 +29,7 @@ public class RobotControl {
     private static final float STOPPING_DISTANCE = 60;
     private static final float STOPPING_VELOCITY = 1;
 
-    private float x, y;
+    private float robotX, robotY;
     private float goalX, goalY;
     private float robotDirection;
     private float robotSpeed;
@@ -49,14 +49,17 @@ public class RobotControl {
     }
 
     private RobotControl() {
-        this.x = 0;
-        this.y = 0;
+        this.robotX = 0;
+        this.robotY = 0;
+
         this.goalX = 0;
         this.goalY = 0;
-        this.robotSpeed = 0.5f;
-        this.robotFound = false;
-        this.robotDirection = 0;
         this.goalPosition = 0;
+
+        this.robotSpeed = 0.5f;
+        this.robotDirection = 0;
+
+        this.robotFound = false;
         this.robotRunning = false;
     }
 
@@ -65,6 +68,8 @@ public class RobotControl {
         if (goalPosition < mPath.size()) {
             this.goalX = (float) mPath.get(goalPosition).getX();
             this.goalY = (float) mPath.get(goalPosition).getY();
+
+            calculateAngle(this.goalX, this.goalY);
 
             return true;
         } else {
@@ -79,7 +84,6 @@ public class RobotControl {
         this.onSuccess = run;
 
         if (setGoal(1)) {
-            calculateAngle(goalX, goalX);
             startMovement();
         }
     }
@@ -96,7 +100,7 @@ public class RobotControl {
     }
 
     private void calculateAngle(float nx, float ny) {
-        robotDirection = (float) Math.toDegrees(Math.atan2((double) (ny - y), (nx - x)));
+        robotDirection = (float) Math.toDegrees(Math.atan2((double) (ny - robotY), (nx - robotX)));
 
         robotDirection = 90.0f - robotDirection;
 
@@ -107,17 +111,17 @@ public class RobotControl {
         Log.d(TAG, "New angle:" + robotDirection);
     }
 
-    private void startMovement() {
+    public void startMovement() {
         mRobot.drive(robotDirection, robotSpeed);
         robotRunning = true;
     }
 
-    private void pauseMovement() {
+    public void pauseMovement() {
         mRobot.stop();
         robotRunning = false;
     }
 
-    public void startDiscovery(Context mContext, final Runnable runnable) {
+    public void startDiscovery(Context mContext, final Runnable onRobotFound) {
         myAgent = DualStackDiscoveryAgent.getInstance();
         myAgent.addRobotStateListener(new RobotChangedStateListener() {
             @Override
@@ -129,7 +133,7 @@ public class RobotControl {
 
                         initRobot();
 
-                        runnable.run();
+                        onRobotFound.run();
 
                         if (myAgent.isDiscovering()) {
                             myAgent.stopDiscovery();
@@ -146,15 +150,17 @@ public class RobotControl {
 
             myAgent.startDiscovery(mContext);
         } catch (DiscoveryException e) {
-            Log.d("Exceptions", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 
     private void initRobot() {
         mRobot.setLed(255, 0, 255);
         mRobot.setBackLedBrightness(1.f);
+
         long sensorFlag = SensorFlag.VELOCITY.longValue() | SensorFlag.LOCATOR.longValue();
         mRobot.enableSensors(sensorFlag, SensorControl.StreamingRate.STREAMING_RATE10);
+
         mRobot.sendCommand(new ConfigureLocatorCommand(0, 0, 0, 0));
 
         mRobot.addResponseListener(new ResponseListener() {
@@ -173,13 +179,13 @@ public class RobotControl {
                 if (asyncMessage instanceof DeviceSensorAsyncMessage && mPath != null && goalPosition < mPath.size()) {
                     DeviceSensorsData sensorsData = ((DeviceSensorAsyncMessage) asyncMessage).getAsyncData().get(0);
 
-                    x = sensorsData.getLocatorData().getPositionX();
-                    y = sensorsData.getLocatorData().getPositionY();
+                    robotX = sensorsData.getLocatorData().getPositionX();
+                    robotY = sensorsData.getLocatorData().getPositionY();
 
-                    Log.d(TAG, "x:" + x + " y:" + y);
+                    Log.d(TAG, "robotX:" + robotX + " robotY:" + robotY);
 
-                    float deltaX = goalX - x;
-                    float deltaY = goalY - y;
+                    float deltaX = goalX - robotX;
+                    float deltaY = goalY - robotY;
 
                     if (deltaX * deltaX + deltaY * deltaY <= STOPPING_DISTANCE * STOPPING_DISTANCE) {
 
@@ -196,7 +202,6 @@ public class RobotControl {
                             if (setGoal(goalPosition + 1)) {
                                 Log.d(TAG, "Current path node:" + mPath.get(goalPosition));
 
-                                calculateAngle(goalX, goalY);
                                 startMovement();
                             } else {
                                 //Success
