@@ -65,7 +65,7 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
                         StringBuilder builder = new StringBuilder();
 
                         byte[] buffer = new byte[1024];
-                        while (temp.read(buffer) != -1) {
+                        while (temp.read(buffer, 0, 1024) != -1) {
                             builder.append(buffer);
                         }
 
