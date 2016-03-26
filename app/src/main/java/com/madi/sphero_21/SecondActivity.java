@@ -66,7 +66,7 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
 
                         byte[] buffer = new byte[1024];
                         while (temp.read(buffer, 0, 1024) != -1) {
-                            builder.append(buffer);
+                            builder.append(new String(buffer));
                         }
 
                         graph = JSONGraph.decodeGraph(new JSONObject(builder.toString()));
