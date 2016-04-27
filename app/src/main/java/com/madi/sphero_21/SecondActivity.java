@@ -13,11 +13,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
+import android.os.Handler;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.List;
+
 
 import ShortestPath.Graph;
 import ShortestPath.JSONGraph;
@@ -31,6 +32,8 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
     private Sensor stepSensor;
     private boolean started=false;
     private long prevTime=0;
+    private final Handler handler = new Handler();
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -83,6 +86,7 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
                         @Override
                         public void run() {
                             mt.setText("Finished!");
+                            mSeekbar.setEnabled(true);
                         }
                     });
                     // GRAPH PART END
@@ -112,11 +116,7 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(started){
-            if(event.timestamp*1E-6-prevTime>2000){
-                RobotControl.getInstance().pauseMovement();
-            } else {
-                RobotControl.getInstance().startMovement();
-            }
+            RobotControl.getInstance().startMovement();
         }
     }
 

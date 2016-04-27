@@ -41,6 +41,8 @@ public class RobotControl {
     private int goalPosition;
     private List<Node> mPath;
     private Runnable onSuccess;
+    private long previousStepTime = 0;
+    private long thresholdTime = 2000;
 
     private static final RobotControl ourInstance = new RobotControl();
 
@@ -115,6 +117,7 @@ public class RobotControl {
         if(!robotRunning) {
             mRobot.drive(robotDirection, robotSpeed);
             robotRunning = true;
+            previousStepTime = System.currentTimeMillis();
         }
     }
 
@@ -190,6 +193,10 @@ public class RobotControl {
 
                     float deltaX = goalX - robotX;
                     float deltaY = goalY - robotY;
+                    //Stop in case no movement
+                    if(System.currentTimeMillis()-previousStepTime>=thresholdTime){
+                        pauseMovement();
+                    }
 
                     if (deltaX * deltaX + deltaY * deltaY <= STOPPING_DISTANCE * STOPPING_DISTANCE) {
 
@@ -206,14 +213,14 @@ public class RobotControl {
                             if (setGoal(goalPosition + 1)) {
                                 Log.d(TAG, "Current path node:" + mPath.get(goalPosition));
 
-                                startMovement();
+                                //startMovement();
                             } else {
                                 //Success
                                 onSuccess.run();
                             }
                         }
                     } else {
-                        startMovement();
+                            //startMovement();
                     }
                 }
             }
