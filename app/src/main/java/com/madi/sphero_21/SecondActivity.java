@@ -1,22 +1,31 @@
 package com.madi.sphero_21;
 
 import android.content.Context;
+import android.graphics.Path;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.os.Handler;
+import android.widget.Toast;
+
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,16 +33,17 @@ import ShortestPath.Graph;
 import ShortestPath.JSONGraph;
 import ShortestPath.Node;
 
-public class SecondActivity extends AppCompatActivity implements SensorEventListener{
-    private TextView mt;
-    private Button mButton;
+public class SecondActivity extends AppCompatActivity implements SensorEventListener, View.OnTouchListener{
+    private FloatingActionButton mButton;
     private SeekBar mSeekbar;
     private SensorManager sensorManager;
     private Sensor stepSensor;
     private boolean started=false;
-    private long prevTime=0;
-    private final Handler handler = new Handler();
-
+    private ImageMap myMap;
+    private Graph mGraph=null;
+    private List<Node> mNodes=null;
+    private Spinner fromSpin;
+    private Spinner toSpin;
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -44,14 +54,22 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
+        //Init
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mButton=(Button) findViewById(R.id.myB);
+        mButton=(FloatingActionButton) findViewById(R.id.startFab);
         mSeekbar=(SeekBar) findViewById(R.id.mySeekBar);
+        myMap = (ImageMap) findViewById(R.id.mMap);
+        myMap.setOnTouchListener(this);
+        fromSpin = (Spinner) findViewById(R.id.spinnerFrom);
+        toSpin = (Spinner) findViewById(R.id.spinnerTo);
+        //Step Sensor
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_FASTEST);
+
+        readGraph();
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,31 +79,14 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
                     /**
                      *     GRAPH CALCULATION
                      *     Begin                         **/
-                    Graph graph = null;
 
-                    try {
-                        InputStream temp = getAssets().open("data.json");
-                        StringBuilder builder = new StringBuilder();
-
-                        byte[] buffer = new byte[1024];
-                        while (temp.read(buffer, 0, 1024) != -1) {
-                            builder.append(new String(buffer));
-                        }
-
-                        graph = JSONGraph.decodeGraph(new JSONObject(builder.toString()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.exit(-1);
-                    }
-                    mt = (TextView) findViewById(R.id.myTxt);
-                    List<Node> myNodes = graph.getShortestPath("Madi", "Bekz");
-                    Log.d("SUPER LOG", myNodes.toString());
+                    mNodes = mGraph.getShortestPath(fromSpin.getSelectedItem().toString(), toSpin.getSelectedItem().toString());
+                    Log.d("SUPER LOG", mNodes.toString());
                     RobotControl rc = RobotControl.getInstance();
-                    prevTime = System.currentTimeMillis();
-                    rc.driveAlong(myNodes, new Runnable() {
+                    rc.driveAlong(mNodes, new Runnable() {
                         @Override
                         public void run() {
-                            mt.setText("Finished!");
+                            Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
                             mSeekbar.setEnabled(true);
                         }
                     });
@@ -113,6 +114,32 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
         });
     }
 
+    private void readGraph(){
+        List<String> vals = new ArrayList<>();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, vals);
+        try {
+            InputStream temp = getAssets().open("data.json");
+            StringBuilder builder = new StringBuilder();
+
+            byte[] buffer = new byte[1024];
+            while (temp.read(buffer, 0, 1024) != -1) {
+                builder.append(new String(buffer));
+            }
+
+            mGraph = JSONGraph.decodeGraph(new JSONObject(builder.toString()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+        for(Node n: mGraph.getNodeList()){
+            vals.add(n.getLabel());
+        }
+
+        fromSpin.setAdapter(adapter);
+        toSpin.setAdapter(adapter);
+    }
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(started){
@@ -123,5 +150,23 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Path temp = new Path();
+        float rx = event.getX();
+        float ry = event.getY();
+        mNodes = mGraph.getShortestPath(fromSpin.getSelectedItem().toString(), toSpin.getSelectedItem().toString());
+        temp.rMoveTo(rx, ry);
+        float x,y;
+        for(int i = 0 ; i<mNodes.size(); i++){
+            x = (float) mNodes.get(i).getX();
+            y = (float) mNodes.get(i).getY();
+            temp.lineTo(x, y);
+            temp.moveTo(x, y);
+        }
+        myMap.setMap(temp, 2, rx, ry);
+        return true;
     }
 }

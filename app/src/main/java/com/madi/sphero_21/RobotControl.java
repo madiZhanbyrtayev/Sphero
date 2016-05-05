@@ -26,15 +26,15 @@ import ShortestPath.Node;
  */
 public class RobotControl {
     private static final String TAG = "RobotControl";
-    private static final float STOPPING_DISTANCE = 60;
-    private static final float STOPPING_VELOCITY = 1;
+    private static final float STOPPING_DISTANCE = 80;
+    private static final float STOPPING_VELOCITY = 10;
 
     private float robotX, robotY;
     private float goalX, goalY;
     private float robotDirection;
     private float robotSpeed;
     private boolean robotRunning;
-    private boolean robotFound;
+    private boolean stopStop;
 
     private DualStackDiscoveryAgent myAgent;
     private ConvenienceRobot mRobot;
@@ -61,7 +61,7 @@ public class RobotControl {
         this.robotSpeed = 0.5f;
         this.robotDirection = 0;
 
-        this.robotFound = false;
+        this.stopStop = false;
         this.robotRunning = false;
     }
 
@@ -114,11 +114,12 @@ public class RobotControl {
     }
 
     public void startMovement() {
-        if(!robotRunning) {
+        if(!robotRunning && !stopStop) {
             mRobot.drive(robotDirection, robotSpeed);
             robotRunning = true;
             previousStepTime = System.currentTimeMillis();
         }
+        Log.d(TAG,robotRunning+" "+stopStop);
     }
 
     public void pauseMovement() {
@@ -136,7 +137,6 @@ public class RobotControl {
                 switch (robotChangedStateNotificationType) {
                     case Online:
                         mRobot = new ConvenienceRobot(robot);
-                        robotFound = true;
 
                         initRobot();
 
@@ -202,6 +202,7 @@ public class RobotControl {
 
                         if (robotRunning) {
                             pauseMovement();
+                            stopStop = true;
                         }
 
                         Log.d(TAG, "Distance to the goal " + Math.sqrt(deltaX * deltaX + deltaY * deltaY));
@@ -213,11 +214,16 @@ public class RobotControl {
                             if (setGoal(goalPosition + 1)) {
                                 Log.d(TAG, "Current path node:" + mPath.get(goalPosition));
 
-                                //startMovement();
+
+                                startMovement();
                             } else {
                                 //Success
                                 onSuccess.run();
+                                mPath = null;
+                                stopStop = true;
                             }
+
+                            stopStop = false;
                         }
                     } else {
                             //startMovement();

@@ -12,25 +12,45 @@
     tools:showIn="@layout/activity_second"
     tools:context="com.madi.sphero_21.SecondActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/myTxt" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/myB"
-        android:text="Press to Start"
-        android:layout_below="@+id/myTxt"
-        android:layout_alignParentStart="true" />
     <SeekBar
         android:layout_width="fill_parent"
         android:layout_height="30dp"
         android:id="@+id/mySeekBar"
         android:max="360"
-        android:layout_below="@+id/myB"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="113dp" />
+        android:indeterminate="false"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentEnd="true" />
+    <com.madi.sphero_21.ImageMap
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/mMap"
+        android:src="@drawable/dar"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please, specify direction:"
+        android:id="@+id/textView"
+        android:layout_below="@+id/spinnerFrom"
+        android:layout_alignEnd="@+id/mySeekBar"/>
+
+    <Spinner
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:id="@+id/spinnerFrom"
+        android:layout_below="@+id/mMap"
+        android:spinnerMode="dropdown"
+        />
+
+    <Spinner
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:id="@+id/spinnerTo"
+        android:spinnerMode="dropdown"
+        android:layout_below="@+id/mMap"
+        android:layout_alignEnd="@+id/mMap" />
 
 
 </RelativeLayout>

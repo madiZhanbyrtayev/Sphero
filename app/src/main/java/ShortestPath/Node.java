@@ -183,7 +183,7 @@ public class Node {
     public String toString() {
         return  "{\"label\" : " + label +
                 ", \"x\" : " + x +
-                ", \"y\" : " + y;
+                ", \"y\" : " + y + "}";
     }
 }
 
