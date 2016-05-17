@@ -4,7 +4,7 @@
         {"label" : "Keks",   "x" : 0.0,    "y": 200.0},
         {"label" : "Label1", "x" : 200.0, "y": 200.0},
         {"label" : "Label2", "x" : 200.0, "y": 0.0},
-        {"label" : "Bekz",   "x" : 0.0,    "y": 0.0}
+        {"label" : "Bekz",   "x" : 600.0,    "y": 200.0}
     ],
 
     "edges" : [

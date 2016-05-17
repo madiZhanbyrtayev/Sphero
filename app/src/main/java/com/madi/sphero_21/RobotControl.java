@@ -86,6 +86,7 @@ public class RobotControl {
         this.onSuccess = run;
 
         if (setGoal(1)) {
+            mRobot.sendCommand(new ConfigureLocatorCommand(0, 0, 0, 0));
             startMovement();
         }
     }
@@ -98,7 +99,6 @@ public class RobotControl {
     public void setHeading() {
         mRobot.setZeroHeading();
         mRobot.setBackLedBrightness(0.f);
-        mRobot.sendCommand(new ConfigureLocatorCommand(0, 0, 0, 0));
     }
 
     private void calculateAngle(float nx, float ny) {
@@ -119,7 +119,7 @@ public class RobotControl {
             robotRunning = true;
             previousStepTime = System.currentTimeMillis();
         }
-        Log.d(TAG,robotRunning+" "+stopStop);
+        Log.d(TAG, robotRunning + " " + stopStop);
     }
 
     public void pauseMovement() {
@@ -194,7 +194,7 @@ public class RobotControl {
                     float deltaX = goalX - robotX;
                     float deltaY = goalY - robotY;
                     //Stop in case no movement
-                    if(System.currentTimeMillis()-previousStepTime>=thresholdTime){
+                    if (System.currentTimeMillis() - previousStepTime >= thresholdTime) {
                         pauseMovement();
                     }
 
@@ -226,13 +226,20 @@ public class RobotControl {
                             stopStop = false;
                         }
                     } else {
-                            //startMovement();
+                        //startMovement();
                     }
                 }
             }
         });
     }
 
+    public float getX(){
+        return robotX;
+    }
+
+    public float getY(){
+        return robotY;
+    }
     public void turnOff() {
         mRobot.setBackLedBrightness(0.f);
         mRobot.disableSensors();

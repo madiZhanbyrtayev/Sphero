@@ -283,6 +283,13 @@ public class Graph {
         return parent;
     }
 
+    public void setNewOrigin(double xOrig, double yOrig){
+        for(Node n: nodeList){
+            n.setX(n.getX() - xOrig);
+            n.setY(n.getY() - yOrig);
+        }
+    }
+
     /**
      * Method that accepts two labels of nodes and returns
      * shortest path from node with label labelFrom to node

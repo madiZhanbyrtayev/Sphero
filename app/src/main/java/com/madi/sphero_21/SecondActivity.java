@@ -79,14 +79,18 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
                     /**
                      *     GRAPH CALCULATION
                      *     Begin                         **/
-
-                    mNodes = mGraph.getShortestPath(fromSpin.getSelectedItem().toString(), toSpin.getSelectedItem().toString());
-                    Log.d("SUPER LOG", mNodes.toString());
                     RobotControl rc = RobotControl.getInstance();
+
+                    mGraph.setNewOrigin(rc.getX(), rc.getY());
+                    final String from = fromSpin.getSelectedItem().toString();
+                    final String to = toSpin.getSelectedItem().toString();
+                    mNodes = mGraph.getShortestPath(from, to);
+                    Log.d("SUPER LOG", mNodes.toString());
                     rc.driveAlong(mNodes, new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
+                            fromSpin.setPrompt(to);
                             mSeekbar.setEnabled(true);
                         }
                     });
@@ -158,14 +162,21 @@ public class SecondActivity extends AppCompatActivity implements SensorEventList
         float rx = event.getX();
         float ry = event.getY();
         mNodes = mGraph.getShortestPath(fromSpin.getSelectedItem().toString(), toSpin.getSelectedItem().toString());
-        temp.rMoveTo(rx, ry);
+        //temp.rMoveTo(rx, ry);
+
         float x,y;
+        String res = " ";
         for(int i = 0 ; i<mNodes.size(); i++){
             x = (float) mNodes.get(i).getX();
             y = (float) mNodes.get(i).getY();
-            temp.lineTo(x, y);
-            temp.moveTo(x, y);
+            res += mNodes.get(i).getLabel()+ " ";
+            if(i!=0) {
+                temp.lineTo(x, y);
+            }
+
+            temp.moveTo(x,y);
         }
+        Log.d("Path", res);
         myMap.setMap(temp, 2, rx, ry);
         return true;
     }
